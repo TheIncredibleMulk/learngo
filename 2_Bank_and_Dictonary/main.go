@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	account := accounts.NewAccount("andrew")
+	account := accounts.NewAccount("Andrew")
 	fmt.Println(account)
 }

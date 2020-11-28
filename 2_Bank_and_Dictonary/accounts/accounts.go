@@ -1,4 +1,4 @@
-package banking
+package accounts
 
 // Account struct
 type Account struct {
@@ -10,4 +10,5 @@ type Account struct {
 func NewAccount(owner string) *Account {
 	account := Account{owner: owner, balance: 0}
 	return &account
+
 }
