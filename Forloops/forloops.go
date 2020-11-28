@@ -10,7 +10,7 @@ func superAdd(numbers ...int) int {
 	return total
 }
 
-// func main() {
+func main() {
 	result := superAdd(1, 2, 3, 4, 5, 6)
 	fmt.Println(result)
 }
