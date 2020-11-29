@@ -9,5 +9,9 @@ import (
 func main() {
 	account := accounts.NewAccount("Andrew")
 	account.Deposit(10)
-	fmt.Println(account.Balance())
+	err := account.Withdraw(0)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(account)
 }
