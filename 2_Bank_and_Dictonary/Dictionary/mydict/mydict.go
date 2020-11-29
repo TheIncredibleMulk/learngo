@@ -48,8 +48,8 @@ func (d Dictionary) Update(word, definition string) error {
 }
 
 // Delete a word
+// TODO add error reporting and feedback to the user
 func (d Dictionary) Delete(word string) {
-
 	delete(d, word)
 	/* _, err := d.Search(word)
 	switch err {
