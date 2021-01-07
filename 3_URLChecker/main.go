@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/url"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,23 +23,23 @@ func main() {
 	}
 
 	for _, url := range urls {
-		result := "Ok"
+		result := "OK"
 		err := hitURL(url)
 		if err != nil {
-			result = "failed"
+			result = "FAILED"
 		}
-		results[url] = result return errRequestFailed
+		results[url] = result
 	}
-	for url, result := range results{
-		fmt.Println("checking:", url)
+	for url, result := range results {
+		fmt.Println(url, result)
 	}
-	return nil
 }
 
 func hitURL(url string) error {
 	fmt.Println("Checking:", url)
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode >= 400 {
+		fmt.Println(err)
 		return errRequestFailed
 	}
 	if resp.StatusCode >= 400 {
