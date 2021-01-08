@@ -7,15 +7,13 @@ import (
 
 func main() {
 	channel := make(chan string)
-	people := [2]string{"nico", "flynn"}
+	people := [5]string{"nico", "flynn", "dal", "japanguy", "larry"}
 	for _, person := range people {
 		go isSexy(person, channel)
 	}
-	fmt.Println("Waiting for messages")
-	resultOne := <-channel
-	resultTwo := <-channel
-	fmt.Println("Recieved this message: ", resultOne)
-	fmt.Println("Recieved this message: ", resultTwo)
+	for i := 0; i < len(people); i++ {
+		fmt.Println(<-channel)
+	}
 }
 
 func isSexy(person string, channel chan string) {
