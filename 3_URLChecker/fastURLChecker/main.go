@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-type result struct {
+type requestResult struct {
 	url    string
 	status string
 }
@@ -14,8 +14,8 @@ type result struct {
 var errRequestFailed = errors.New("Status code > 400\nRequest Failed")
 
 func main() {
-	var results = map[string]string{}
-	c := make(chan result)
+	results := map[string]string{}
+	c := make(chan requestResult)
 	urls := []string{
 		"https://www.airbnb.com/",
 		"https://www.google.com/",
@@ -29,21 +29,22 @@ func main() {
 	}
 
 	for _, url := range urls {
-		hitURL(url)
+		go hitURL(url, c)
 	}
-
+	for i := 0; i < len(urls); i++ {
+		result := <-c
+		results[result.url] = result.status
+	}
+	for url, status := range results {
+		fmt.Println(url, status)
+	}
 }
 
-func hitURL(url string, c chan result) error {
-	fmt.Println("Checking:", url)
+func hitURL(url string, c chan<- requestResult) {
 	resp, err := http.Get(url)
+	status := "OK"
 	if err != nil || resp.StatusCode >= 400 {
-		c <- result{url: url, status: "FAILED"}
-	} else {
-
+		status = "FAILED"
 	}
-	if resp.StatusCode >= 400 {
-		return errRequestFailed
-	}
-	return nil
+	c <- requestResult{url: url, status: status}
 }
