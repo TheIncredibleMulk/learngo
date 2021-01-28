@@ -1,4 +1,4 @@
-package main
+package scrapper
 
 import (
 	"encoding/csv"
@@ -20,9 +20,10 @@ type extractedJob struct {
 	summary  string
 }
 
-var baseURL string = "https://www.indeed.com/jobs?q=python&limit=50&start="
 
-func main() {
+//Scrape indeed by a term
+func Scrape(term) {
+	var baseURL string = "https://www.indeed.com/jobs?q=" + term + "limit=50&start="
 	var jobs []extractedJob
 	totalPages := getPages()
 	c := make(chan []extractedJob)
