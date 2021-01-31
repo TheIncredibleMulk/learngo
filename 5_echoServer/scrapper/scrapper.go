@@ -20,30 +20,29 @@ type extractedJob struct {
 	summary  string
 }
 
-
-//Scrape indeed by a term
-func Scrape(term) {
+//Scrape Indeed by a term
+func Scrape(term string) {
 	var baseURL string = "https://www.indeed.com/jobs?q=" + term + "limit=50&start="
 	var jobs []extractedJob
-	totalPages := getPages()
+	totalPages := getPages(baseURL)
 	c := make(chan []extractedJob)
 
 	for i := 0; i < totalPages; i++ {
-		go getPage(i, c)
+		go getPage(i, baseURL, c)
 
 	}
 	for i := 0; i < totalPages; i++ {
 		extractedJobs := <-c
 		jobs = append(jobs, extractedJobs...)
 	}
-	writeJobs(jobs, c)
+	writeJobs(jobs)
 	fmt.Println("Done, extraced", len(jobs))
 }
 
 // getPages gets the number of pages webpages at the bottom of indeed.com and returns a number so we know how many pages to scrape the jobs from
-func getPages() int {
+func getPages(url string) int {
 	pages := 0
-	res, err := http.Get(baseURL)
+	res, err := http.Get(url)
 	checkErr(err)
 	checkCode(res)
 
@@ -60,11 +59,11 @@ func getPages() int {
 }
 
 // getPage pulls the jobcards from extractJob and puts them through each page.
-func getPage(page int, mainC chan<- []extractedJob) {
+func getPage(page int, url string, mainC chan<- []extractedJob) {
 	var jobs []extractedJob
 	c := make(chan extractedJob)
 	//pageURL is the main indeed.com and required info incrimented by the number of pages.
-	pageURL := baseURL + "&start=" + strconv.Itoa(page*50)
+	pageURL := url + "&start=" + strconv.Itoa(page*50)
 	fmt.Println("Requesting", pageURL)
 	res, err := http.Get(pageURL)
 	checkErr(err)
@@ -106,7 +105,7 @@ func extractJob(card *goquery.Selection, c chan<- extractedJob) {
 }
 
 //takes input and stores it into a csv file called jobs
-func writeJobs(jobs []extractedJob, writtenJobs) {
+func writeJobs(jobs []extractedJob) {
 	file, err := os.Create("jobs.csv")
 	checkErr(err)
 
@@ -119,7 +118,7 @@ func writeJobs(jobs []extractedJob, writtenJobs) {
 	checkErr(wErr)
 
 	for _, job := range jobs {
-		go jobSlice := []string{"https://indeed.com/viewjob?k=" + job.id, job.title, job.location, job.salary, job.summary}
+		jobSlice := []string{"https://indeed.com/viewjob?k=" + job.id, job.title, job.location, job.salary, job.summary}
 		jwErr := w.Write(jobSlice)
 		checkErr(jwErr)
 	}
